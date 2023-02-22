@@ -187,6 +187,193 @@ JLEON.MOV_DIRECTORS.LAST_NAME;
 -- Grant Access to JLEON
 GRANT SELECT ON IS324304.T2_LOPEZ_JUAN_8 TO JLEON;
 
+-- Punto 9 Por cada genero diferente de películas, encuentre el total de películas dentro de cada género y el promedio de calificación de cada uno.
+
+SELECT JLEON.MOV_MOVIES_GENRERS.GENRE, COUNT(JLEON.MOV_MOVIES_GENRERS.GENRE) AS TOTAL, ROUND(AVG(JLEON.MOV_MOVIES.RANK), 2) AS AVERAGE_RANKING
+FROM JLEON.MOV_MOVIES_GENRERS
+INNER JOIN JLEON.MOV_MOVIES ON JLEON.MOV_MOVIES_GENRERS.MOVIE_ID = JLEON.MOV_MOVIES.ID
+GROUP BY JLEON.MOV_MOVIES_GENRERS.GENRE;
+
+
+-- Create View and Give Access to JLEON
+CREATE VIEW T2_LOPEZ_JUAN_9 AS SELECT JLEON.MOV_MOVIES_GENRERS.GENRE, COUNT(JLEON.MOV_MOVIES_GENRERS.GENRE) AS TOTAL, 
+ROUND(AVG(JLEON.MOV_MOVIES.RANK), 2) AS AVERAGE_RANKING FROM JLEON.MOV_MOVIES_GENRERS INNER JOIN JLEON.MOV_MOVIES ON 
+JLEON.MOV_MOVIES_GENRERS.MOVIE_ID = JLEON.MOV_MOVIES.ID GROUP BY JLEON.MOV_MOVIES_GENRERS.GENRE;
+
+-- Grant Access to JLEON
+GRANT SELECT ON IS324304.T2_LOPEZ_JUAN_9 TO JLEON;
+
+-- 10) Seleccione los géneros diferentes de películas que no aparecen en la tabla correspondiente, pero que si aparecen registrados dentro de los géneros que hacen los directores.
+
+SELECT DISTINCT JLEON.MOV_DIRECTORS_GENRERS.GENRE
+FROM JLEON.MOV_DIRECTORS_GENRERS
+WHERE JLEON.MOV_DIRECTORS_GENRERS.GENRE NOT IN (SELECT JLEON.MOV_MOVIES_GENRERS.GENRE FROM JLEON.MOV_MOVIES_GENRERS);
+
+-- Create View and Give Access to JLEON
+CREATE VIEW T2_LOPEZ_JUAN_10 AS SELECT DISTINCT JLEON.MOV_DIRECTORS_GENRERS.GENRE FROM JLEON.MOV_DIRECTORS_GENRERS WHERE 
+JLEON.MOV_DIRECTORS_GENRERS.GENRE NOT IN (SELECT JLEON.MOV_MOVIES_GENRERS.GENRE FROM JLEON.MOV_MOVIES_GENRERS);
+
+-- Grant Access to JLEON
+GRANT SELECT ON IS324304.T2_LOPEZ_JUAN_10 TO JLEON;
+
+-- Punto 11: No tiene sentido ya que no se puede hacer un join entre las tablas MOV_DIRECTORS_GENRERS y MOV_MOVIES_GENRERS, ya que no tienen una columna en común.
+
+-- SECTION 3
+
+-- Tabla Usando la tabla:
+-- CUSTOMERS_VEHICLES_RELATION
+-- CUSTOMERS
+-- VEHICLES
+
+DESCRIBE JLEON.CUSTOMERS;
+DESCRIBE JLEON.CUSTOMERS_VEHICLES_RELATION;
+DESCRIBE JLEON.VEHICLES;
+
+-- Name	Null?	Type
+-- ID_CUSTOMER	NOT NULL	NUMBER(38)
+-- NAME		VARCHAR2(20)
+-- LAST_NAME		VARCHAR2(20)
+-- AGE		NUMBER(38)
+-- LOCATION		VARCHAR2(200)
+-- COMPANY		VARCHAR2(200)
+
+-- SQL> DESCRIBE JLEON.CUSTOMERS_VEHICLES_RELATION;
+-- Name	Null?	Type
+-- ID_CUSTOMER		NUMBER(38)
+-- ID_VEHICLE		NUMBER(38)
+-- MILEAGE_KM		NUMBER(38)
+-- VIN		VARCHAR2(20)
+-- USE_TIME_DAYS		NUMBER(38)
+
+-- SQL> DESCRIBE JLEON.VEHICLES;
+-- Name	Null?	Type
+-- ID_VEHICLE	NOT NULL	NUMBER(38)
+-- BRAND		VARCHAR2(20)
+-- MODEL		VARCHAR2(20)
+-- YEAR		NUMBER(38)
+-- COLOR		VARCHAR2(20)
+
+-- 13) Seleccione el nombre, apellido, edad, marca del vehículo, modelo, año y color de las personas que posean un vehículo.
+
+SELECT JLEON.CUSTOMERS.NAME, JLEON.CUSTOMERS.LAST_NAME, JLEON.CUSTOMERS.AGE, JLEON.VEHICLES.BRAND, JLEON.VEHICLES.MODEL, JLEON.VEHICLES.YEAR, JLEON.VEHICLES.COLOR
+FROM JLEON.CUSTOMERS
+INNER JOIN JLEON.CUSTOMERS_VEHICLES_RELATION ON JLEON.CUSTOMERS.ID_CUSTOMER = JLEON.CUSTOMERS_VEHICLES_RELATION.ID_CUSTOMER
+INNER JOIN JLEON.VEHICLES ON JLEON.CUSTOMERS_VEHICLES_RELATION.ID_VEHICLE = JLEON.VEHICLES.ID_VEHICLE;
+
+-- Create View and Give Access to JLEON
+CREATE VIEW T2_LOPEZ_JUAN_13 AS SELECT JLEON.CUSTOMERS.NAME, JLEON.CUSTOMERS.LAST_NAME, JLEON.CUSTOMERS.AGE, JLEON.VEHICLES.BRAND, 
+JLEON.VEHICLES.MODEL, JLEON.VEHICLES.YEAR, JLEON.VEHICLES.COLOR FROM JLEON.CUSTOMERS INNER JOIN JLEON.CUSTOMERS_VEHICLES_RELATION ON 
+JLEON.CUSTOMERS.ID_CUSTOMER = JLEON.CUSTOMERS_VEHICLES_RELATION.ID_CUSTOMER INNER JOIN JLEON.VEHICLES ON 
+JLEON.CUSTOMERS_VEHICLES_RELATION.ID_VEHICLE = JLEON.VEHICLES.ID_VEHICLE;
+
+-- Grant Access to JLEON
+GRANT SELECT ON IS324304.T2_LOPEZ_JUAN_13 TO JLEON;
+
+-- 14) Encuentre el promedio de edad de las personas que NO poseen vehículos.
+
+SELECT AVG(JLEON.CUSTOMERS.AGE)
+FROM JLEON.CUSTOMERS
+LEFT JOIN JLEON.CUSTOMERS_VEHICLES_RELATION ON JLEON.CUSTOMERS.ID_CUSTOMER = JLEON.CUSTOMERS_VEHICLES_RELATION.ID_CUSTOMER
+WHERE JLEON.CUSTOMERS_VEHICLES_RELATION.ID_CUSTOMER IS NULL;
+
+-- Create View and Give Access to JLEON
+CREATE VIEW T2_LOPEZ_JUAN_14 AS SELECT AVG(JLEON.CUSTOMERS.AGE) as AVERAGE_NO_VEHICLE_AGE
+FROM JLEON.CUSTOMERS
+LEFT JOIN JLEON.CUSTOMERS_VEHICLES_RELATION ON JLEON.CUSTOMERS.ID_CUSTOMER = JLEON.CUSTOMERS_VEHICLES_RELATION.ID_CUSTOMER
+WHERE JLEON.CUSTOMERS_VEHICLES_RELATION.ID_CUSTOMER IS NULL;
+
+-- Grant Access to JLEON
+GRANT SELECT ON IS324304.T2_LOPEZ_JUAN_14 TO JLEON;
+
+-- 15) Seleccione la marca, el total de vehículos de esa marca y el año del modelo más reciente de
+-- esa marca, de los vehículos que no han sido adquiridos por ningún cliente.
+SELECT JLEON.VEHICLES.BRAND, COUNT(JLEON.VEHICLES.ID_VEHICLE) AS TOTAL_VEHICLES, MAX(JLEON.VEHICLES.YEAR) AS MAX_YEAR
+FROM JLEON.VEHICLES
+LEFT JOIN JLEON.CUSTOMERS_VEHICLES_RELATION ON JLEON.VEHICLES.ID_VEHICLE = JLEON.CUSTOMERS_VEHICLES_RELATION.ID_VEHICLE
+WHERE JLEON.CUSTOMERS_VEHICLES_RELATION.ID_CUSTOMER IS NULL
+GROUP BY JLEON.VEHICLES.BRAND;
+
+-- Create View and Give Access to JLEON
+CREATE VIEW T2_LOPEZ_JUAN_15 AS SELECT JLEON.VEHICLES.BRAND, COUNT(JLEON.VEHICLES.ID_VEHICLE) AS TOTAL_VEHICLES, MAX(JLEON.VEHICLES.YEAR) AS MAX_YEAR
+FROM JLEON.VEHICLES
+LEFT JOIN JLEON.CUSTOMERS_VEHICLES_RELATION ON JLEON.VEHICLES.ID_VEHICLE = JLEON.CUSTOMERS_VEHICLES_RELATION.ID_VEHICLE
+WHERE JLEON.CUSTOMERS_VEHICLES_RELATION.ID_CUSTOMER IS NULL
+GROUP BY JLEON.VEHICLES.BRAND;
+
+-- Grant Access to JLEON
+GRANT SELECT ON IS324304.T2_LOPEZ_JUAN_15 TO JLEON;
+
+-- 16) Para generar un informe detallado de la tienda, se le solicita una tabla donde muestre toda
+-- la información importante de clientes (incluidos los que aún no poseen vehículos) y de
+-- vehículos (incluyendo aquellos que no han sido comprados), donde aparezca el nombre,
+-- apellido y edad del cliente, kilómetros recorridos, marca, modelo, año y color del vehículo.
+-- Este resultado debe estar ordenado por Apellido y nombre. Además, debe agregar una
+-- columna “VERIFICADO” que tenga la palabra “OK” para todos los registros.
+
+SELECT JLEON.CUSTOMERS.NAME, JLEON.CUSTOMERS.LAST_NAME, JLEON.CUSTOMERS.AGE, JLEON.CUSTOMERS_VEHICLES_RELATION.MILEAGE_KM, JLEON.VEHICLES.BRAND, JLEON.VEHICLES.MODEL, JLEON.VEHICLES.YEAR, JLEON.VEHICLES.COLOR, 'OK' AS VERIFIED
+FROM JLEON.CUSTOMERS
+INNER JOIN JLEON.CUSTOMERS_VEHICLES_RELATION ON JLEON.CUSTOMERS.ID_CUSTOMER = JLEON.CUSTOMERS_VEHICLES_RELATION.ID_CUSTOMER
+INNER JOIN JLEON.VEHICLES ON JLEON.CUSTOMERS_VEHICLES_RELATION.ID_VEHICLE = JLEON.VEHICLES.ID_VEHICLE
+ORDER BY JLEON.CUSTOMERS.LAST_NAME, JLEON.CUSTOMERS.NAME;
+
+-- Create View and Give Access to JLEON
+CREATE VIEW T2_LOPEZ_JUAN_16 AS SELECT JLEON.CUSTOMERS.NAME, JLEON.CUSTOMERS.LAST_NAME, JLEON.CUSTOMERS.AGE, JLEON.CUSTOMERS_VEHICLES_RELATION.MILEAGE_KM, JLEON.VEHICLES.BRAND, JLEON.VEHICLES.MODEL, JLEON.VEHICLES.YEAR, JLEON.VEHICLES.COLOR, 'OK' AS VERIFIED
+FROM JLEON.CUSTOMERS
+INNER JOIN JLEON.CUSTOMERS_VEHICLES_RELATION ON JLEON.CUSTOMERS.ID_CUSTOMER = JLEON.CUSTOMERS_VEHICLES_RELATION.ID_CUSTOMER
+INNER JOIN JLEON.VEHICLES ON JLEON.CUSTOMERS_VEHICLES_RELATION.ID_VEHICLE = JLEON.VEHICLES.ID_VEHICLE
+ORDER BY JLEON.CUSTOMERS.LAST_NAME, JLEON.CUSTOMERS.NAME;
+
+-- Grant Access to JLEON
+GRANT SELECT ON IS324304.T2_LOPEZ_JUAN_16 TO JLEON;
+
+-- SECTION 4
+
+-- En ocasiones se deben obtener fuentes de datos desde diferentes sistemas o tecnologías.
+-- Los datos se pueden encontrar en bases de datos, apis, archivos, entre otros. Para este
+-- ejercicio se requieren 3 fuentes de datos.
+-- o Tabla en BD jleon.videogames_sales: Contiene información relevante de la venta de
+-- videojuegos incluyendo las ventas (en millones de dólares).
+-- o Tabla “videogamesDates”: Información de fecha exacta de salida de videojuegos, se
+-- obtiene como información desde la web.
+-- o Tabla “TRM”: Información de TRM para Colombia, se obtiene desde datos abiertos
+-- de Colombia.
+
+-- 17)  Para la tabla “videogamesDates “: Descargar el dataset desde wikidata
+-- (https://query.wikidata.org/) e ingresar los datos a la base de datos Oracle. Puede usar la
+-- siguiente consulta de sparql:
+-- SELECT ?game ?gameLabel ?releaseDate ?platformLabel ?periodLabel WHERE {
+--  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+--  ?game wdt:P31 wd:Q7889.
+--  ?game wdt:P577 ?releaseDate .
+--  ?game wdt:P400 ?platform .
+--  ?game wdt:P2408 ?period .
+-- }
+
+--  Sub pasos:
+-- Ingresar al link.
+-- Correr el query.
+-- Descargar el archivo en formato CSV.
+-- Crear tabla 
+
+-- Profe, por alguna Razon del sistema fue posible cargar los CSV a la plataforma, oracle explorer
+-- Ver archivo
+
+-- - Indique paso a paso como cargó los datos (tenga en cuenta los tipos de datos, no todos
+-- son cadenas de texto).
+-- 18) Descargar el dataset desde datos abiertos de Colombia y cargarlo a la base de datos Oracle.
+-- La ruta de descarga es: https://www.datos.gov.co/Econom-a-y-Finanzas/Tasa-de-CambioRepresentativa-del-Mercado-Historic/mcec-87by
+-- - Indique paso a paso como cargó los datos (tenga en cuenta los tipos de datos, no todos
+-- son cadenas de texto).
+
+
+
+
+
+
+
+
+
+
 
 
 
