@@ -355,15 +355,94 @@ GRANT SELECT ON IS324304.T2_LOPEZ_JUAN_16 TO JLEON;
 -- Descargar el archivo en formato CSV.
 -- Crear tabla 
 
--- Profe, por alguna Razon del sistema fue posible cargar los CSV a la plataforma, oracle explorer
--- Ver archivo
-
 -- - Indique paso a paso como cargó los datos (tenga en cuenta los tipos de datos, no todos
 -- son cadenas de texto).
 -- 18) Descargar el dataset desde datos abiertos de Colombia y cargarlo a la base de datos Oracle.
 -- La ruta de descarga es: https://www.datos.gov.co/Econom-a-y-Finanzas/Tasa-de-CambioRepresentativa-del-Mercado-Historic/mcec-87by
 -- - Indique paso a paso como cargó los datos (tenga en cuenta los tipos de datos, no todos
 -- son cadenas de texto).
+
+-- Profe, por alguna Razon del sistema fue posible cargar los CSV a la plataforma, oracle explorer
+-- Ver archivo, sin embargo de acuerdo a los esquemas los queries correspondientess son los siguientes:
+
+-- La tabla jleon.videogames_sales tiene el siguiente esquema:
+
+--  DESCRIBE JLEON.VIDEOGAMES_SALES;
+-- Name	Null?	Type
+-- RANK_VGS	NOT NULL	NUMBER(10)
+-- NAME	NOT NULL	VARCHAR2(150)
+-- PLATFORM	NOT NULL	VARCHAR2(100)
+-- YEAR		NUMBER(4)
+-- GENRE		VARCHAR2(100)
+-- PUBLISHER		VARCHAR2(100)
+-- NA_SALES		NUMBER(6,2)
+-- EU_SALES		NUMBER(6,2)
+-- JP_SALES		NUMBER(6,2)
+-- OTHER_SALES		NUMBER(6,2)
+-- GLOBAL_SALES		NUMBER(6,2)
+
+-- La talbla videogameDates tiene el siguiente esquema:
+
+-- game,gameLabel,releaseDate,platformLabel,periodLabel
+-- http://www.wikidata.org/entity/Q45028,Halo 4,2012-11-06T00:00:00Z,Xbox 360,future
+-- http://www.wikidata.org/entity/Q45028,Halo 4,2012-11-06T00:00:00Z,Xbox One,future
+-- http://www.wikidata.org/entity/Q137802,Halo 3,2007-09-25T00:00:00Z,Microsoft Windows,future
+-- http://www.wikidata.org/entity/Q137802,Halo 3,2007-09-25T00:00:00Z,Xbox 360,future
+-- http://www.wikidata.org/entity/Q137802,Halo 3,2007-09-25T00:00:00Z,Xbox One,future
+-- http://www.wikidata.org/entity/Q137802,Halo 3,2007-09-26T00:00:00Z,Microsoft Windows,future
+-- http://www.wikidata.org/entity/Q137802,Halo 3,2007-09-26T00:00:00Z,Xbox 360,future
+-- http://www.wikidata.org/entity/Q137802,Halo 3,2007-09-26T00:00:00Z,Xbox One,future
+
+-- La tabla TRM tiene el siguiente esquema:
+
+-- VALOR,UNIDAD,VIGENCIADESDE,VIGENCIAHASTA
+-- 4761.64,COP,22/12/2022,22/12/2022
+-- 4781.28,COP,20/12/2022,20/12/2022
+-- 4802.48,COP,17/12/2022,19/12/2022
+-- 4836.24,COP,13/12/2022,13/12/2022
+-- 4815.99,COP,10/12/2022,12/12/2022
+
+-- Los queries serian los siguientes: 
+
+-- 19) Actualice la columna de “plataforma” en la tabla “videogamesDates” para que sean
+-- congruentes con la columna de “plataforma” en la tabla “videogames_sales”. Puede usar la
+-- sentencia CASE, WHEN.
+
+UPDATE JLEON.VIDEOGAMES_DATES SET JLEON.VIDEOGAMES_DATES.PLATFORM = JL.VIDEOGAMES_SALES.PLATFORM WHERE JLEON.VIDEOGAMES_DATES.PLATFORM = JL.VIDEOGAMES_SALES.PLATFORM;
+
+-- 20) De la tabla “videogamesDates”, encuentre la cantidad de juegos que se estrenaron en cada
+-- año y cada mes, entre los años 2000 y 2020. Muestre el resultado ordenado por año y mes.
+-- Puede usar la función EXTRACT y TO_DATE para lograr los resultados esperados.
+
+SELECT EXTRACT(YEAR FROM TO_DATE(JLEON.VIDEOGAMES_DATES.RELEASEDATE, 'YYYY-MM-DD')), 
+EXTRACT(MONTH FROM TO_DATE(JLEON.VIDEOGAMES_DATES.RELEASEDATE, 'YYYY-MM-DD')), COUNT(*) FROM 
+JLEON.VIDEOGAMES_DATES WHERE EXTRACT(YEAR FROM TO_DATE(JLEON.VIDEOGAMES_DATES.RELEASEDATE, 'YYYY-MM-DD')) 
+BETWEEN 2000 AND 2020 GROUP BY EXTRACT(YEAR FROM TO_DATE(JLEON.VIDEOGAMES_DATES.RELEASEDATE, 'YYYY-MM-DD')), 
+EXTRACT(MONTH FROM TO_DATE(JLEON.VIDEOGAMES_DATES.RELEASEDATE, 'YYYY-MM-DD')) 
+ORDER BY EXTRACT(YEAR FROM TO_DATE(JLEON.VIDEOGAMES_DATES.RELEASEDATE, 'YYYY-MM-DD')), EXTRACT(MONTH FROM TO_DATE(JLEON.VIDEOGAMES_DATES.RELEASEDATE, 'YYYY-MM-DD'));
+
+-- 21) Encuentre un top 10 de los años y meses en donde más juegos fueron liberados entre los
+-- años 1990 y 2000. Solo tenga en cuenta aquellos años y meses donde se liberaron menos
+-- de 5 juegos.
+
+SELECT EXTRACT(YEAR FROM TO_DATE(JLEON.VIDEOGAMES_DATES.RELEASEDATE, 'YYYY-MM-DD')), 
+EXTRACT(MONTH FROM TO_DATE(JLEON.VIDEOGAMES_DATES.RELEASEDATE, 'YYYY-MM-DD')), COUNT(*) FROM 
+JLEON.VIDEOGAMES_DATES WHERE EXTRACT(YEAR FROM TO_DATE(JLEON.VIDEOGAMES_DATES.RELEASEDATE, 'YYYY-MM-DD')) 
+BETWEEN 1990 AND 2000 GROUP BY EXTRACT(YEAR FROM TO_DATE(JLEON.VIDEOGAMES_DATES.RELEASEDATE, 'YYYY-MM-DD')), 
+EXTRACT(MONTH FROM TO_DATE(JLEON.VIDEOGAMES_DATES.RELEASEDATE, 'YYYY-MM-DD')) 
+HAVING COUNT(*) > 5 ORDER BY COUNT(*) DESC;
+
+-- 22) Encuentre el valor en pesos colombianos (COP) de las ventas globales para cada juego en
+-- cada plataforma. Use el valor de la tasa representativa de el día en que el juego fue lanzado.
+-- Para los registros que no crucen de las tablas de videojuegos, deje como valor el precio en
+-- dólares negativo (ejemplo: -2.25).
+
+SELECT JLEON.VIDEOGAMES_SALES.NAME, ROUND(JLEON.VIDEOGAMES_SALES.GLOBAL_SALES * TRM.VALOR, 2) FROM 
+JLEON.VIDEOGAMES_SALES, TRM ORDER BY JLEON.VIDEOGAMES_SALES.GLOBAL_SALES * TRM.VALOR DESC;
+
+
+
+
 
 
 
