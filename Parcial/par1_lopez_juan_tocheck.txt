@@ -1,0 +1,269 @@
+JUAN DAVID LOPEZ BECERRA
+
+
+SELECCION MULTIPLE.
+
+
+1.1 El resultado de una consulta SQL (query) SIEMPRE, da como resultado una relación.
+a. Verdadero.
+b. Falso.
+c. La pregunta está mal formulada.
+d. El concepto de consulta y de relación, no tienen dependencia.
+
+RESPUESTA: a. Verdadero.
+
+1.2 Respecto a la siguiente sentencia de un DDL
+…
+Clave char(10),
+…
+a. Crea un campo llamado clave con mínimo 10 caracteres.
+b. Crea un campo llamado clave a lo mucho con 10 caracteres.
+c. Cualquier dato que se ingrese en Clave, tendrá 10 caracteres siempre.
+d. Los datos insertados pueden tener desde 1 caracter hasta 10.
+
+
+RESPUESTA: a. Crea un campo llamado clave con mínimo 10 caracteres.
+
+
+1.3 Respecto a un atributo en una relación:
+a. Representa de manera única una entidad.
+b. Debe tener un dominio específico.
+c. Representa una instancia en la base de datos.
+d. Debe tener al menos una restricción (constraint).
+
+RESPUESTA: B. Debe tener un dominio especifico.
+
+1.4 Si se quiere juntar los registros de dos relaciones con los mismos atributos, se debe hacer:
+a Union.
+b. Producto cartesiano.
+c. Inner / natural join.
+d. Intersect.
+
+RESPUESTA: C. Inner / Natural Join.
+
+1.5 ¿Cuál es la diferencia entre una vista y una tabla en Oracle?
+a. Una vista es una tabla física almacenada en la base de datos, mientras que una tabla es
+solo una definición de estructura.
+b. Las vistas no pueden contener datos, mientras que las tablas sí.
+c. Las vistas se utilizan principalmente para consultas, mientras que las tablas se utilizan
+para almacenar y manipular datos.
+d. Las vistas y las tablas son lo mismo en Oracle.
+
+RESPUESTA: c. Las vistas se utilizan principalmente para consultas, mientras que las tablas se utilizan
+para almacenar y manipular datos.
+
+
+1.6. Explique en NO mas de 20 palabras lo que hace la siguiente consulta. 
+
+pi nombre,email,producto(Clientes ⋈(σ date>='2023-01-01' (Compras)))
+
+RESPUESTA: La consulta selecciona el nombre, correo electrónico y producto adquirido de los clientes que hicieron compras en 2023.
+
+
+2. Conceptos de SQL:
+
+3.1 ¿Cuáles de las siguientes afirmaciones son verdaderas?
+a. Documento es llave foránea en TOMADORES Y referencia a CREDITOS.
+b. Campo “tomador” y campo “documento” deben tener el mismo tipo de dato.
+c. Si se inserta el valor ‘1234.56789’ en “saldo_total”, la restricción se cumple, es decir, no
+hay errores.
+d. Si se cruzan con un inner join las dos tablas, “María López” aparecería mas de 1 vez.
+e. Al calcular el saldo pagado (saldo_total – saldo_faltante) se genera un error.
+f. Campo “tomador” en CREDITOS puede ser null.
+g. La restricción de llave primaria se cumple en CREDITOS, es decir, no hay errores.
+h. El registro 5 genera un error al insertarlo (después de haber insertado el registro 1 y 2)
+I. “Numero_credito” en Creditos admite nulos.
+j. Tomadores tiene una llave Subrogada (surrogate).
+k. Se puede decir que Tomadores tiene una llave natural.
+
+RESPUESTA:
+
+a. Verdadero. Documento es una llave foránea en TOMADORES y referencia a CREDITOS.
+b. Verdadero. Campo "tomador" y campo "documento" deben tener el mismo tipo de dato para que puedan ser relacionados.
+c. Falso. Si se inserta el valor '1234.56789' en "saldo_total", la restricción no se cumple y se producirá un error debido a que el campo solo admite hasta 3 decimales.
+d. Falso. Si se cruzan con un inner join las dos tablas, "María López" solo aparecerá una vez si no hay más de un crédito asociado a ella.
+e. Falso. Al calcular el saldo pagado (saldo_total - saldo_faltante) no se genera un error siempre que se asegure que el tipo de datos y la precisión son los adecuados para hacer la operación.
+f. Verdadero. El campo "tomador" en CREDITOS puede ser null.
+g. Verdadero. La restricción de llave primaria se cumple en CREDITOS, es decir, no hay errores.
+h. Falso. No
+
+
+3.2 De acuerdo al siguiente comando SQL, marque todas las afirmaciones correctas [-1 punto por
+cada respuesta incorrecta]: 
+select TOMADOR, numero_credito ,AVG(SALDO_TOTAL) as TOTAL from creditos
+GROUP BY TOMADOR
+
+a. La consulta está incorrecta, ya que las agregaciones están mal.
+b. La consulta está incorrecta, ya que la agrupación está mal.
+c. Si el select fuera: “select TOMADOR, max(numero_credito), avg(SALDO_TOTAL)”, el
+resultado serían los promedios de cada tomador, junto con el número de crédito más
+reciente (el máximo).
+d. Si el select fuera: “select TOMADOR, max(numero_credito),max(SALDO_TOTAL)”,
+estaría incorrecto ya que en la agrupación no se tiene en cuenta el “numero_credito”.
+e. Se puede agrupar de la siguiente forma: “GROUP BY TOMADOR, NUMERO_CREDITO”.
+
+Afirmaciones correctas:
+
+b. La consulta está incorrecta, ya que la agrupación está mal. Para que la consulta sea correcta, deben agruparse todos los campos que no están en una función de agregación, es decir, "TOMADOR" y "NUMERO_CREDITO". 
+c. Verdadero. Si el select fuera: "select TOMADOR, max(numero_credito), avg(SALDO_TOTAL)", el resultado serían los promedios de cada tomador, junto con el número de crédito más reciente (el máximo).
+d. Falso. Si el select fuera: "select TOMADOR, max(numero_credito), max(SALDO_TOTAL)", estaría correcto ya que la función de agregación "max" se aplica a "numero_credito" y "SALDO_TOTAL" y ambos están en la agrupación.
+e. Falso. No se puede agrupar por "NUMERO_CREDITO" ya que es una llave primaria y siempre tendrá un valor único.
+
+
+3.3 De la consulta siguiente:
+
+select count (*) as total
+from creditos с inner join tomadores t
+on C. tomador = t. documento
+where C. numero_credito is not null
+group by c. Numero_Credito
+order by c. Numero_Credito
+
+a. La consulta genera ___ registros como resultado.
+b. ¿La consulta se puede escribir con un natural join? Si__, No __
+
+DESARROLLO: a. La consulta generará un registro por cada número de crédito que no sea nulo y que tenga al menos un tomador asociado.
+b. Sí, la consulta se puede escribir con un natural join si las columnas de unión entre las tablas tienen el mismo nombre en ambas tablas.
+
+3) Desarrollo de consultas. (50%)
+
+
+Se le contrata para hacer una base de datos sencilla para un sistema de call center. Se le entrega
+el siguiente diccionario de datos y se le pide generar algunos reportes y funcionalidades. Los
+atributos subrayados son la llave primaria, y los que están en cursiva son llaves foráneas.
+
+1.
+
+Paises: Contiene los países y su descripción.
+
+Llave Primeria: Id: identificación única del país.
+descrip: Nombre del país.
+
+2.
+
+Agentes: empleados del call center que
+reciben llamadas.
+
+Llave prmaria: Id: identificación única de cada agente.
+Llave foranea: Id_pais: país donde labora el agente.
+
+3.
+
+Clientes: Información de todos los clientes
+que se comunican o que están dentro del
+sistema.
+
+Llave primaria: id: identificación única del cliente.
+Nombre: nombre del cliente.
+Llave Foranea: Pais_origen: país de donde llama el cliente.
+Edad: edad del cliente
+
+4. 
+
+Llamadas: información que contiene datos
+de las llamadas.
+
+Llave primaria: id: identificación única de la llamada.
+tiempo: cantidad de minutos que duró la
+llamada.
+fecha: fecha de la llamada.
+Llave foranea: Agente_id: agente que recibe la llamada.
+Llave foranea: Cliente_id: cliente que hace la llamada
+
+
+Se le contrata para hacer una base de datos sencilla para un sistema de call center. Se le entrega
+el siguiente diccionario de datos y se le pide generar algunos reportes y funcionalidades. Los
+atributos subrayados son la llave primaria, y los que están en cursiva son llaves foráneas.
+
+1.
+
+Paises: Contiene los países y su descripción.
+
+Llave Primeria: Id: identificación única del país.
+descrip: Nombre del país.
+
+2.
+
+Agentes: empleados del call center que
+reciben llamadas.
+
+Llave prmaria: Id: identificación única de cada agente.
+Llave foranea: Id_pais: país donde labora el agente.
+
+3.
+
+Clientes: Información de todos los clientes
+que se comunican o que están dentro del
+sistema.
+
+Llave primaria: id: identificación única del cliente.
+Nombre: nombre del cliente.
+Llave Foranea: Pais_origen: país de donde llama el cliente.
+Edad: edad del cliente
+
+4. 
+
+Llamadas: información que contiene datos
+de las llamadas.
+
+Llave primaria: id: identificación única de la llamada.
+tiempo: cantidad de minutos que duró la
+llamada.
+fecha: fecha de la llamada.
+Llave foranea: Agente_id: agente que recibe la llamada.
+Llave foranea: Cliente_id: cliente que hace la llamada
+
+3.1 Esquema.png
+
+3.2. Encuentre por cada agente, el promedio de tiempos por llamadas en cada país de origen
+(de donde se realiza la llamada), el resultado debe tener 3 columnas (id, pais,
+promedio_tiempo)
+
+SELECT Agentes.Id, Clientes.Pais_origen, AVG(Llamadas.tiempo) as promedio_tiempo
+FROM Llamadas
+INNER JOIN Agentes ON Llamadas.Agente_id = Agentes.Id
+INNER JOIN Clientes ON Llamandas.Cliente_id = Clientes.Id
+GROUP BY Agentes.id, Clientes.Pais_origen;
+
+
+3.3. Muestre el top 10 de las llamadas que más tiempo duraron en pais_origen “Estados
+unidos” y que se han hecho únicamente durante enero de 2023.
+
+SELECT Llamadas.id, Llamadas.tiempo, Llamadas.fecha, Clientes.Pais_origen
+FROM Llamadas
+INNER JOIN Clientes ON Llamadas.Cliente_id = Clientes.id
+WHERE Clientes.Pais_origen = 'Estados Unidos' 
+AND Llamadas.fecha >= '2023-01-01' 
+AND Llamadas.fecha < '2023-02-01'
+ORDER BY Llamadas.tiempo DESC
+FETCH FIRST 10 ROWS ONLY;
+
+3.4. Muestre los Agentes que no han recibido llamadas o aquellos donde al menos 1 llamada
+esté por debajo del promedio de tiempo todas las llamadas
+
+SELECT Agentes.*
+FROM Agentes
+LEFT JOIN Llamadas ON Llamadas.Agente_id = Agentes.Id
+GROUP BY Agentes.Id
+HAVING COUNT(Llamadas.id) = 0 OR MIN(Llamadas.tiempo) < (SELECT AVG(tiempo) FROM Llamadas);
+
+
+3.5. Muestre el top 10 de los clientes que han realizado más de 3 llamadas y cuya edad esté
+sobre el promedio de edades de todos los clientes.
+
+SELECT Agentes.Id, Agentes.Id_pais
+FROM Agentes
+LEFT JOIN Llamadas ON Agentes.Id = Llamadas.Agente_id
+GROUP BY Agentes.Id, Agentes.Id_pais
+HAVING COUNT(Llamadas.id) = 0 OR MIN(Llamadas.tiempo) < (SELECT AVG(Llamadas.tiempo) FROM Llamadas);
+
+
+
+
+
+
+
+
+
+
+
