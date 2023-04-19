@@ -2,12 +2,12 @@
 INSERT INTO Pais1
 (IdPais1, Nombre, Descripcion)
 VALUES
-(1, 'Pais A', 'Descripcion A');
+(1, 'Pais A', 'Descripcion A', 1);
 
 INSERT INTO Pais1
 (IdPais1, Nombre, Descripcion)
 VALUES
-(2, 'Pais B', 'Descripcion B');
+(2, 'Pais B', 'Descripcion B', 2);
 
 -- Tabla Ubicacion
 INSERT INTO Ubicacion
@@ -46,12 +46,12 @@ VALUES
 INSERT INTO TipoDeResolucion
 (IdTipoDeResolucion, TipoDeResolucion, Precio)
 VALUES
-(1, 'Resolucion A', 100);
+(1, 'Resolucion A', 1);
 
 INSERT INTO TipoDeResolucion
 (IdTipoDeResolucion, TipoDeResolucion, Precio)
 VALUES
-(2, 'Resolucion B', 200);
+(2, 'Resolucion B', 2);
 
 -- tabla Evento
 INSERT INTO Evento
@@ -79,7 +79,12 @@ VALUES
 INSERT INTO entidadesAutorizadas
 (IdEntidadAutorizada, NombreEntidad, ComisionPorcentaje)
 VALUES
-(1, 'Entidad A', 10);
+(1, 'VISA', 10);
+
+INSERT INTO entidadesAutorizadas
+(IdEntidadAutorizada, NombreEntidad, ComisionPorcentaje)
+VALUES
+(2, 'MASTER CARD', 10);
 
 INSERT INTO entidadesAutorizadas
 (IdEntidadAutorizada, NombreEntidad, ComisionPorcentaje)
@@ -173,19 +178,13 @@ INSERT INTO Foto_Evento
 VALUES
 (2, 2);
 
-INSERT INTO Fotos_Carrito
+INSERT INTO Fotos_CarritoCompras
 (IdFoto, IdCarritoCompras)
 VALUES
 (1, 1);
 
-INSERT INTO Fotos_Carrito
+INSERT INTO Fotos_CarritoCompras
 (IdFoto, IdCarritoCompras)
 VALUES
 (2, 2);
-
-INSERT INTO Foto_Historias
-(IdFoto, IdHistorias)
-VALUES
-(1, 1);
-
 

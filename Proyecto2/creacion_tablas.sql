@@ -1,3 +1,22 @@
+-- Pais1
+
+CREATE TABLE Pais1 (
+  IdPais NUMBER PRIMARY KEY,
+  Nombre VARCHAR2(100) NOT NULL,
+  Descripcion VARCHAR2(500) NOT NULL,
+  IdHistorias NUMBER,
+  FOREIGN KEY (IdHistorias) REFERENCES Historias(IdHistorias)
+);
+
+-- Ubicacion
+CREATE TABLE Ubicacion (
+IdUbicacion NUMBER PRIMARY KEY,
+IdPais1 NUMBER NOT NULL,
+Departamento VARCHAR2(100) NOT NULL,
+Ciudad VARCHAR2(100) NOT NULL,
+FOREIGN KEY (IdPais1) REFERENCES Pais1(IdPais1)
+);
+
 -- Usuarios
 CREATE TABLE Usuarios (
     Id_usuario NUMBER PRIMARY KEY,
@@ -12,6 +31,70 @@ CREATE TABLE Usuarios (
     Eliminado CHAR(1) NOT NULL CONSTRAINT check_eliminado CHECK (Eliminado IN ('S', 'N'))
 );
 
+-- TipoDeFoto
+CREATE TABLE TipoDeFoto (
+IdTipoDeFoto NUMBER PRIMARY KEY,
+Formato VARCHAR2(20) NOT NULL,
+Ruta_archivo VARCHAR2(500) NOT NULL,
+Tamaño NUMBER NOT NULL CONSTRAINT check_tamaño CHECK (Tamaño < 5)
+);
+
+-- TipoDeResolucion
+CREATE TABLE TipoDeResolucion (
+IdTipoDeResolucion NUMBER PRIMARY KEY,
+TipoDeResolucion VARCHAR2(100) NOT NULL,
+Precio NUMBER(10, 2) NOT NULL CONSTRAINT check_precioResolucion CHECK (Precio >= 0)
+);
+
+-- Evento
+CREATE TABLE Evento (
+idEvento NUMBER PRIMARY KEY,
+evento VARCHAR2(100) NOT NULL
+);
+
+-- Temas
+CREATE TABLE Temas (
+idTema NUMBER PRIMARY KEY,
+tema VARCHAR2(100) NOT NULL
+);
+
+-- entidadesAutorizadas
+CREATE TABLE entidadesAutorizadas (
+IdEntidadAutorizada NUMBER PRIMARY KEY,
+NombreEntidad VARCHAR2(100) NOT NULL,
+ComisionPorcentaje NUMBER(5, 2) NOT NULL CONSTRAINT check_comisionPorcentaje CHECK (ComisionPorcentaje BETWEEN 0 AND 100)
+);
+-- Impuestos
+
+CREATE TABLE Impuestos (
+    IdImpuesto NUMBER PRIMARY KEY,
+    TipoDeImpuesto VARCHAR2(100) NOT NULL,
+    Porcentaje NUMBER(5, 2) NOT NULL CONSTRAINT check_porcentaje CHECK (Porcentaje BETWEEN 0 AND 100)
+);
+
+-- CarritoDeCompras
+
+CREATE TABLE CarritoDeCompras (
+    idCarritoCompras NUMBER PRIMARY KEY,
+    fechaDeCompra DATE NOT NULL,
+    precio NUMBER(10, 2) NOT NULL CONSTRAINT check_precio CHECK (precio >= 0),
+    cantidad NUMBER NOT NULL CONSTRAINT check_cantidad CHECK (cantidad >= 0)
+);
+
+-- Fotos
+CREATE TABLE Fotos (
+IdFoto NUMBER PRIMARY KEY,
+Descripcion VARCHAR2(500) NOT NULL,
+Fecha DATE NOT NULL,
+IdUbicacion NUMBER NOT NULL,
+IdTema NUMBER NOT NULL,
+IdUsuario NUMBER NOT NULL,
+Eliminado CHAR(1) NOT NULL CONSTRAINT check_eliminadoFotos CHECK (Eliminado IN ('S', 'N')),
+FOREIGN KEY (IdUbicacion) REFERENCES Ubicacion(IdUbicacion),
+FOREIGN KEY (IdTema) REFERENCES Temas(idTema),
+FOREIGN KEY (IdUsuario) REFERENCES Usuarios(Id_usuario)
+);
+
 -- Compras
 CREATE TABLE Compras (
     IdUsuario NUMBER NOT NULL,
@@ -21,33 +104,6 @@ CREATE TABLE Compras (
     FOREIGN KEY (IdCarritoCompras) REFERENCES CarritoDeCompras(idCarritoCompras)
 );
 
--- Impuestos
-CREATE TABLE Impuestos (
-    IdImpuesto NUMBER PRIMARY KEY,
-    TipoDeImpuesto VARCHAR2(100) NOT NULL,
-    Porcentaje NUMBER(5, 2) NOT NULL CONSTRAINT check_porcentaje CHECK (Porcentaje BETWEEN 0 AND 100)
-);
-
--- CarritoDeCompras
-CREATE TABLE CarritoDeCompras (
-    idCarritoCompras NUMBER PRIMARY KEY,
-    fechaDeCompra DATE NOT NULL,
-    precio NUMBER(10, 2) NOT NULL CONSTRAINT check_precio CHECK (precio >= 0),
-    cantidad NUMBER NOT NULL CONSTRAINT check_cantidad CHECK (cantidad >= 0)
-);
-
--- FotosCarritoCompras
-CREATE TABLE FotosCarritoCompras (
-    IdCarritoCompras NUMBER NOT NULL,
-    IdFoto NUMBER NOT NULL,
-    IdTipoDeFoto NUMBER NOT NULL,
-    IdTipoDeResolucion NUMBER NOT NULL,
-    FOREIGN KEY (IdCarritoCompras) REFERENCES CarritoDeCompras(idCarritoCompras),
-    FOREIGN KEY (IdFoto) REFERENCES Fotos(IdFoto),
-    FOREIGN KEY (IdTipoDeFoto) REFERENCES TipoDeFoto(IdTipoDeFoto),
-    FOREIGN KEY (IdTipoDeResolucion) REFERENCES TipoDeResolucion(IdTipoDeResolucion),
-    PRIMARY KEY (IdCarritoCompras, IdFoto, IdTipoDeFoto, IdTipoDeResolucion)
-);
 
 -- Ventas
 CREATE TABLE Ventas (
@@ -64,17 +120,60 @@ CREATE TABLE Ventas (
 FOREIGN KEY (IdImpuestos) REFERENCES Impuestos(IdImpuesto)
 );
 
--- Descargas
-CREATE TABLE Descargas (
+-- Historias
+CREATE TABLE Historias (
+IdHistorias NUMBER PRIMARY KEY,
+Historia VARCHAR2(4000) NOT NULL,
 IdUsuario NUMBER NOT NULL,
-IdDescarga NUMBER PRIMARY KEY,
+FOREIGN KEY (IdUsuario) REFERENCES Usuarios(Id_usuario)
+);
+
+-- FotoTipoDeFoto
+CREATE TABLE FotoTipoDeFoto (
 IdFoto NUMBER NOT NULL,
-IdResolucion NUMBER NOT NULL,
-IdTipoDeImagen NUMBER NOT NULL,
-FOREIGN KEY (IdUsuario) REFERENCES Usuarios(Id_usuario),
+IdTipoDeFoto NUMBER NOT NULL,
 FOREIGN KEY (IdFoto) REFERENCES Fotos(IdFoto),
-FOREIGN KEY (IdResolucion) REFERENCES TipoDeResolucion(IdTipoDeResolucion),
-FOREIGN KEY (IdTipoDeImagen) REFERENCES TipoDeFoto(IdTipoDeFoto)
+FOREIGN KEY (IdTipoDeFoto) REFERENCES TipoDeFoto(IdTipoDeFoto),
+PRIMARY KEY (IdFoto, IdTipoDeFoto)
+);
+
+-- Foto_Resolucion
+CREATE TABLE Foto_Resolucion (
+IdFoto NUMBER NOT NULL,
+IdTipoDeResolucion NUMBER NOT NULL,
+FOREIGN KEY (IdFoto) REFERENCES Fotos(IdFoto),
+FOREIGN KEY (IdTipoDeResolucion) REFERENCES TipoDeResolucion(IdTipoDeResolucion),
+PRIMARY KEY (IdFoto, IdTipoDeResolucion)
+);
+
+-- Foto_Evento
+CREATE TABLE Foto_Evento (
+idFoto NUMBER NOT NULL,
+idEvento NUMBER NOT NULL,
+FOREIGN KEY (idFoto) REFERENCES Fotos(IdFoto),
+FOREIGN KEY (idEvento) REFERENCES Evento(idEvento),
+PRIMARY KEY (idFoto, idEvento)
+);
+
+-- Foto_Temas
+CREATE TABLE Foto_Temas (
+idFoto NUMBER NOT NULL,
+idTema NUMBER NOT NULL,
+FOREIGN KEY (idFoto) REFERENCES Fotos(IdFoto),
+FOREIGN KEY (idTema) REFERENCES Temas(idTema),
+PRIMARY KEY (idFoto, idTema)
+);
+-- FotosCarritoCompras
+CREATE TABLE FotosCarritoCompras (
+    IdCarritoCompras NUMBER NOT NULL,
+    IdFoto NUMBER NOT NULL,
+    IdTipoDeFoto NUMBER NOT NULL,
+    IdTipoDeResolucion NUMBER NOT NULL,
+    FOREIGN KEY (IdCarritoCompras) REFERENCES CarritoDeCompras(idCarritoCompras),
+    FOREIGN KEY (IdFoto) REFERENCES Fotos(IdFoto),
+    FOREIGN KEY (IdTipoDeFoto) REFERENCES TipoDeFoto(IdTipoDeFoto),
+    FOREIGN KEY (IdTipoDeResolucion) REFERENCES TipoDeResolucion(IdTipoDeResolucion),
+    PRIMARY KEY (IdCarritoCompras, IdFoto, IdTipoDeFoto, IdTipoDeResolucion)
 );
 
 -- DetallesVentas
@@ -94,112 +193,18 @@ FOREIGN KEY (IdTipoDeResolucion) REFERENCES TipoDeResolucion(IdTipoDeResolucion)
 PRIMARY KEY (IdVenta, IdFoto, IdTipoDeFoto, IdTipoDeResolucion)
 );
 
--- entidadesAutorizadas
-CREATE TABLE entidadesAutorizadas (
-IdEntidadAutorizada NUMBER PRIMARY KEY,
-NombreEntidad VARCHAR2(100) NOT NULL,
-ComisionPorcentaje NUMBER(5, 2) NOT NULL CONSTRAINT check_comisionPorcentaje CHECK (ComisionPorcentaje BETWEEN 0 AND 100)
-);
-
--- Fotos
-CREATE TABLE Fotos (
-IdFoto NUMBER PRIMARY KEY,
-Descripcion VARCHAR2(500) NOT NULL,
-Fecha DATE NOT NULL,
-IdUbicacion NUMBER NOT NULL,
-IdTema NUMBER NOT NULL,
+-- Descargas
+CREATE TABLE Descargas (
 IdUsuario NUMBER NOT NULL,
-Eliminado CHAR(1) NOT NULL CONSTRAINT check_eliminadoFotos CHECK (Eliminado IN ('S', 'N')),
-FOREIGN KEY (IdUbicacion) REFERENCES Ubicacion(IdUbicacion),
-FOREIGN KEY (IdTema) REFERENCES Temas(idTema),
-FOREIGN KEY (IdUsuario) REFERENCES Usuarios(Id_usuario)
-);
-
--- FotoTipoDeFoto
-CREATE TABLE FotoTipoDeFoto (
+IdDescarga NUMBER PRIMARY KEY,
 IdFoto NUMBER NOT NULL,
-IdTipoDeFoto NUMBER NOT NULL,
+IdResolucion NUMBER NOT NULL,
+IdTipoDeImagen NUMBER NOT NULL,
+FOREIGN KEY (IdUsuario) REFERENCES Usuarios(Id_usuario),
 FOREIGN KEY (IdFoto) REFERENCES Fotos(IdFoto),
-FOREIGN KEY (IdTipoDeFoto) REFERENCES TipoDeFoto(IdTipoDeFoto),
-PRIMARY KEY (IdFoto, IdTipoDeFoto)
+FOREIGN KEY (IdResolucion) REFERENCES TipoDeResolucion(IdTipoDeResolucion),
+FOREIGN KEY (IdTipoDeImagen) REFERENCES TipoDeFoto(IdTipoDeFoto)
 );
 
--- TipoDeFoto
-CREATE TABLE TipoDeFoto (
-IdTipoDeFoto NUMBER PRIMARY KEY,
-Formato VARCHAR2(20) NOT NULL,
-Ruta_archivo VARCHAR2(500) NOT NULL,
-Tamaño NUMBER NOT NULL CONSTRAINT check_tamaño CHECK (Tamaño > 5 * 1024 * 1024)
-);
-
--- Foto_Resolucion
-CREATE TABLE Foto_Resolucion (
-IdFoto NUMBER NOT NULL,
-IdTipoDeResolucion NUMBER NOT NULL,
-FOREIGN KEY (IdFoto) REFERENCES Fotos(IdFoto),
-FOREIGN KEY (IdTipoDeResolucion) REFERENCES TipoDeResolucion(IdTipoDeResolucion),
-PRIMARY KEY (IdFoto, IdTipoDeResolucion)
-);
-
--- TipoDeResolucion
-CREATE TABLE TipoDeResolucion (
-IdTipoDeResolucion NUMBER PRIMARY KEY,
-TipoDeResolucion VARCHAR2(100) NOT NULL,
-Precio NUMBER(10, 2) NOT NULL CONSTRAINT check_precioResolucion CHECK (Precio >= 0)
-);
-
--- Ubicacion
-CREATE TABLE Ubicacion (
-IdUbicacion NUMBER PRIMARY KEY,
-IdPais1 NUMBER NOT NULL,
-Departamento VARCHAR2(100) NOT NULL,
-Ciudad VARCHAR2(100) NOT NULL,
-FOREIGN KEY (IdPais1) REFERENCES Pais1(IdPais1)
-);
-
--- Pais1
-CREATE TABLE Pais1 (
-IdPais1 NUMBER PRIMARY KEY,
-Nombre VARCHAR2(100) NOT NULL,
-Descripcion VARCHAR2(500) NOT NULL
-);
-
--- Historias
-CREATE TABLE Historias (
-IdHistorias NUMBER PRIMARY KEY,
-Historia VARCHAR2(4000) NOT NULL,
-IdUsuario NUMBER NOT NULL,
-FOREIGN KEY (IdUsuario) REFERENCES Usuarios(Id_usuario)
-);
-
--- Foto_Evento
-CREATE TABLE Foto_Evento (
-idFoto NUMBER NOT NULL,
-idEvento NUMBER NOT NULL,
-FOREIGN KEY (idFoto) REFERENCES Fotos(IdFoto),
-FOREIGN KEY (idEvento) REFERENCES Evento(idEvento),
-PRIMARY KEY (idFoto, idEvento)
-);
-
--- Evento
-CREATE TABLE Evento (
-idEvento NUMBER PRIMARY KEY,
-evento VARCHAR2(100) NOT NULL
-);
-
--- Foto_Temas
-CREATE TABLE Foto_Temas (
-idFoto NUMBER NOT NULL,
-idTema NUMBER NOT NULL,
-FOREIGN KEY (idFoto) REFERENCES Fotos(IdFoto),
-FOREIGN KEY (idTema) REFERENCES Temas(idTema),
-PRIMARY KEY (idFoto, idTema)
-);
-
--- Temas
-CREATE TABLE Temas (
-idTema NUMBER PRIMARY KEY,
-tema VARCHAR2(100) NOT NULL
-);
 
 
