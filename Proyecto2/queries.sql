@@ -13,7 +13,7 @@ WHERE u.Id_usuario = v.IdVendedor
 GROUP BY u.Id_usuario, u.NombreDePila, u.Apellido;
 -- 3 Suma total de ganancias que la empresa obtiene por la venta de fotos, por períodos, por fotógrafos.
 
-SELECT u.Id_usuario, u.NombreDePila, u.Apellido, TO_CHAR(v.FechaDeVenta, 'YYYY-MM') as Periodo, SUM(v.ComisionDeEseMomento) as GananciaEmpresa
+SELECT u.Id_usuario, u.NombreDePila, u.Apellido, TO_CHAR(v.FechaDeVenta, 'YYYY-MM') as Periodo, SUM(v.PrecioTotal - v.GananciaFotografo) as GananciaEmpresa
 FROM Usuarios u, Ventas v
 WHERE u.Id_usuario = v.IdVendedor
 GROUP BY u.Id_usuario, u.NombreDePila, u.Apellido, TO_CHAR(v.FechaDeVenta, 'YYYY-MM')
@@ -27,9 +27,9 @@ GROUP BY u.Id_usuario, u.NombreDePila, u.Apellido, TO_CHAR(c.fechaDeCompra, 'YYY
 ORDER BY Periodo, TotalPagado DESC;
 -- 5 Número total de fotos que se tienen por país, ubicación, sujeto, tema, evento
 
-SELECT p.Nombre as Pais, u.Ciudad, t.tema, e.evento, COUNT(*) as TotalFotos
-FROM Fotos f, Ubicacion u, Pais p, Foto_Temas ft, Temas t, Foto_Evento fe, Evento e
-WHERE f.IdUbicacion = u.IdUbicacion AND u.IdPais = p.IdPais AND f.IdFoto = ft.idFoto AND ft.idTema = t.idTema AND f.IdFoto = fe.idFoto AND fe.idEvento = e.idEvento
+SELECT p.Nombre as Pais1, u.Ciudad, t.tema, e.evento, COUNT(*) as TotalFotos
+FROM Fotos f, Ubicacion u, Pais1 p, Foto_Temas ft, Temas t, Foto_Evento fe, Evento e
+WHERE f.IdUbicacion = u.IdUbicacion AND u.IdPais1 = p.IdPais1 AND f.IdFoto = ft.idFoto AND ft.idTema = t.idTema AND f.IdFoto = fe.idFoto AND fe.idEvento = e.idEvento
 GROUP BY p.Nombre, u.Ciudad, t.tema, e.evento
 ORDER BY TotalFotos DESC;
 
@@ -72,9 +72,9 @@ ORDER BY TotalVendido DESC;
 
 --11 ¿De qué país se venden más fotos?
 
-SELECT p.Nombre as Pais, COUNT(*) as TotalVendido
-FROM Fotos f, Ubicacion u, Pais p, DetallesVentas dv
-WHERE f.IdUbicacion = u.IdUbicacion AND u.IdPais = p.IdPais AND f.IdFoto = dv.IdFoto
+SELECT p.Nombre as Pais1, COUNT(*) as TotalVendido
+FROM Fotos f, Ubicacion u, Pais1 p, DetallesVentas dv
+WHERE f.IdUbicacion = u.IdUbicacion AND u.IdPais1 = p.IdPais1 AND f.IdFoto = dv.IdFoto
 GROUP BY p.Nombre
 ORDER BY TotalVendido DESC;
 --12 ¿De qué evento se venden más fotos?
